@@ -1,5 +1,5 @@
 package main.rice.node;
-
+import java.util.*;
 import main.rice.obj.AIterablePyObj;
 import main.rice.obj.APyObj;
 
@@ -13,4 +13,40 @@ import main.rice.obj.APyObj;
 public abstract class AIterablePyNode<OuterType extends AIterablePyObj<InnerType>,
         InnerType extends APyObj> extends APyNode<OuterType> {
     // TODO: implement the abstract AIterablePyNode class here
+        protected APyNode<InnerType> leftChild;
+        public APyNode<InnerType> getLeftChild(){
+            return this.leftChild;
+    }
+    /**
+     * Recursion helper method for genExVals that generate all combinations of
+     * the inner type domain given the current value(length) from the outer type domain
+     * @param: maxValue, current length from domain
+     * @return: a set of lists where each list is of length maxValue and the appropriate combination of elements of
+     * type InnerType.
+     */
+    public Set<List<InnerType>> genExVals_helper(int maxValue, Set<InnerType> childGenExVals){
+        //when length is 0, return an empty set of lists
+        if (maxValue == 0){
+            return new HashSet<>(Set.of(new ArrayList<>()));
+        }
+        else{
+            //Adding
+            Set<List<InnerType>> subsets = new HashSet<>(Set.of(new ArrayList<>()));
+            //permutation
+            Set<List<InnerType>> shortPerms = genExVals_helper(maxValue -1, childGenExVals);
+            //for each permutation of length - 1
+            for (List<InnerType> shortPerm: shortPerms){
+                //for each value to be added
+                for(InnerType val: childGenExVals){
+                    //copy the previous permutation of lower length
+                    List<InnerType> temp = new ArrayList<>(shortPerm);
+                    //add that value val to the permutation
+                    temp.add(val);
+                    //add the updated permutation to subsets
+                    subsets.add(temp);
+                }
+            }
+            return subsets;
+        }
+    }
 }
